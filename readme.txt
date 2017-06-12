@@ -21,6 +21,8 @@ This is just a Wordpress wrapper for the fullcalendar Open Source project.
 
 4. Configure Full Calendar in the WordPress Setup menu.
 
+5. Insert the [fullcalendar] shortcode in your pages.
+
 == Screenshots ==
 
 == Changelog ==  
