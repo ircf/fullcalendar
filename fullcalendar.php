@@ -3,7 +3,7 @@
 Plugin Name: fullcalendar
 Plugin URI: https://ircf.fr
 Description: Display and customize one or many Google calendars. This is just a Wordpress wrapper for the fullcalendar Open Source project
-Version: 2.0.0
+Version: 3.4.0
 Author: IRCF
 Author URI: https://ircf.fr/
 */
@@ -26,11 +26,7 @@ Author URI: https://ircf.fr/
 
 // Default plugin options, may be modified in the Settings menu
 $fullcalendar_default_options = array(
-  "head" => '<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment-with-locales.min.js"></script>
-<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.2/fullcalendar.min.css" />
-<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.2/fullcalendar.print.css" media="print"/>
-<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.2/fullcalendar.min.js"></script>',
+  "head" => '',
   "body" => '<div id="loading" style="display:none">Chargement en cours...</div>
     <div id="calendar"></div>
     <script type="text/javascript">
@@ -53,7 +49,7 @@ $fullcalendar_default_options = array(
 add_action('admin_menu', 'fullcalendar_menu');
 
 function fullcalendar_menu() {
-    add_options_page('fullcalendar', 'fullcalendar', 20, 'fullcalendar', 'fullcalendar_options');	 
+    add_options_page('FullCalendar', 'FullCalendar', 20, 'fullcalendar', 'fullcalendar_options');	 
 }
 
 function fullcalendar_get_options($field=null){
@@ -72,30 +68,34 @@ function fullcalendar_options() {
   global $fullcalendar_default_options;
   $options = fullcalendar_get_options();
   if(isset($_POST['Submit'])){
-    if ($_POST["Submit"]=="Modifier"){
+    if ($_POST["Submit"]==__('Update', 'fullcalendar_textdomain' )){
       foreach($_POST as $key=>$value){
         if (substr($key,0,13)=="fullcalendar_"){
           $options[str_replace("fullcalendar_","",$key)] = stripslashes($value);
         }
       }
       update_option('fullcalendar_options', $options);
-      echo '<div class="updated"><p><strong>'.__('Options enregistrées', 'fullcalendar_textdomain' ).'</strong></p></div>';
-    }elseif ($_POST["Submit"]=="Réinitialiser"){
+      echo '<div class="updated"><p><strong>'.__('Options saved', 'fullcalendar_textdomain' ).'</strong></p></div>';
+    }elseif ($_POST["Submit"]==__('Reset', 'fullcalendar_textdomain' )){
       update_option('fullcalendar_options', $fullcalendar_default_options);
-      echo '<div class="updated"><p><strong>'.__('Options réinitialisées', 'fullcalendar_textdomain' ).'</strong></p></div>';
+      echo '<div class="updated"><p><strong>'.__('Options resetted', 'fullcalendar_textdomain' ).'</strong></p></div>';
     }
   }
   ?>
   <div class="wrap">   
     <form method="post" name="options" target="_self">
-      <h2>Configure fullcalendar</h2>
-      <h3>Head (Javascript template)</h3>
+      <h2><?=__('Configure FullCalendar', 'fullcalendar_textdomain' )?></h2>
+      <p><?=__('For the FullCalendar API documentation, please visit <a href="https://fullcalendar.io" target="_blank">fullcalendar.io</a>', 'fullcalendar_textdomain' )?></p>
+      <h3><?=__('Head template', 'fullcalendar_textdomain' )?></h3>
+      <p><?=__('<strong>WARNING : </strong> Setting the head template will remove the default FullCalendar JS+CSS loading.', 'fullcalendar_textdomain' )?></p>
       <textarea name="fullcalendar_head" cols="100" rows="10"><?php echo $options['head']?></textarea>
-      <h3>Body (HTML template)</h3>
-      <p>Short code parameters [fullcalendar param1=valeur1 param2=valeur2] can be used with : %param1%, %param2% . These expressions will be replaced by their respective values in the HTML code.</p>
+      <h3><?=__('Body template', 'fullcalendar_textdomain' )?></h3>
+      <p><?=__('Short code parameters [fullcalendar param1=valeur1 param2=valeur2] can be used with : %param1%, %param2% . These expressions will be replaced by their respective values in the HTML code.', 'fullcalendar_textdomain' )?></p>
       <textarea name="fullcalendar_body" cols="100" rows="30"><?php echo $options['body']?></textarea>
-      <p class="submit"><input type="submit" name="Submit" value="Modifier" class="button-primary" /></p>
-      <p class="submit"><input type="submit" name="Submit" value="Réinitialiser" class="button-primary" /></p>
+      <p class="submit">
+        <input type="submit" name="Submit" value="<?=__('Update', 'fullcalendar_textdomain' )?>" class="button-primary" />
+        <input type="submit" name="Submit" value="<?=__('Reset', 'fullcalendar_textdomain' )?>" class="button" />
+      </p>
     </form>
   </div>
   <?php
@@ -111,7 +111,6 @@ function fullcalendar_placeholders($text,$placeholders){
 
 // Short code
 // TODO Add TinyMCE shortcode button
-
 function fullcalendar_body($atts) {
   $options = fullcalendar_get_options();
   $output = fullcalendar_placeholders($options['body'],$atts);
@@ -119,18 +118,33 @@ function fullcalendar_body($atts) {
 }
 add_shortcode('fullcalendar', 'fullcalendar_body');
 
+// Enqueue scripts and styles
+function fullcalendar_enqueue_scripts() {
+  wp_enqueue_script('moment', '//cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment-with-locales.min.js', array('jquery'));
+  wp_enqueue_script('fullcalendar', '//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js', array('jquery','moment'));
+  wp_enqueue_script('fullcalendar_gcal', '//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/gcal.js', array('fullcalendar'));
+  wp_enqueue_style('fullcalendar', '//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.css');
+  wp_enqueue_style('fullcalendar_print', '//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.print.min.css', array(), null, 'print');
+}
+
+// Custom head template
 function fullcalendar_head(){
   $options = fullcalendar_get_options();
   echo $options['head'];
 }
 
-function fullcalendar_scan () { 
+// Enable enqueue+head if page has [fullcallendar] shortcode
+function fullcalendar_scan() { 
   global $posts; 
   if ( !is_array ( $posts ) ) 
     return;
   foreach ( $posts as $post ) { 
-   if ( false !== strpos ( $post->post_content, '[fullcalendar' ) ) { 
-     add_action ( 'wp_head', 'fullcalendar_head' ); 
+   if ( false !== strpos ( $post->post_content, '[fullcalendar' ) ) {
+     if (fullcalendar_get_options('head') != ''){
+       add_action ('wp_head', 'fullcalendar_head');
+     }else{
+       add_action('wp_enqueue_scripts', 'fullcalendar_enqueue_scripts');
+     }
      break; 
    } 
   } 
