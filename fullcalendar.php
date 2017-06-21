@@ -67,16 +67,16 @@ function fullcalendar_get_options($field=null){
 function fullcalendar_options() {
   global $fullcalendar_default_options;
   $options = fullcalendar_get_options();
-  if(isset($_POST['Submit'])){
-    if ($_POST["Submit"]==__('Update', 'fullcalendar_textdomain' )){
-      foreach($_POST as $key=>$value){
-        if (substr($key,0,13)=="fullcalendar_"){
-          $options[str_replace("fullcalendar_","",$key)] = stripslashes($value);
+  if(isset($_POST['Submit']) && check_admin_referer('fullcalendar_options')){
+    if ($_POST["Submit"] == __('Update', 'fullcalendar_textdomain' )){
+      foreach($_POST as $key => $value){
+        if (substr($key,0,13) == "fullcalendar_"){
+          $options[str_replace("fullcalendar_", "", sanitize_key($key))] = stripslashes($value); // value can't be sanitized as it's HTML code
         }
       }
       update_option('fullcalendar_options', $options);
       echo '<div class="updated"><p><strong>'.__('Options saved', 'fullcalendar_textdomain' ).'</strong></p></div>';
-    }elseif ($_POST["Submit"]==__('Reset', 'fullcalendar_textdomain' )){
+    }elseif ($_POST["Submit"] == __('Reset', 'fullcalendar_textdomain' )){
       update_option('fullcalendar_options', $fullcalendar_default_options);
       echo '<div class="updated"><p><strong>'.__('Options resetted', 'fullcalendar_textdomain' ).'</strong></p></div>';
     }
@@ -84,6 +84,7 @@ function fullcalendar_options() {
   ?>
   <div class="wrap">   
     <form method="post" name="options" target="_self">
+      <?php wp_nonce_field( 'fullcalendar_options' ); ?>
       <h2><?=__('Configure FullCalendar', 'fullcalendar_textdomain' )?></h2>
       <p><?=__('For the FullCalendar API documentation, please visit <a href="https://fullcalendar.io" target="_blank">fullcalendar.io</a>', 'fullcalendar_textdomain' )?></p>
       <h3><?=__('Head template', 'fullcalendar_textdomain' )?></h3>
@@ -132,21 +133,8 @@ function fullcalendar_head(){
   $options = fullcalendar_get_options();
   echo $options['head'];
 }
-
-// Enable enqueue+head if page has [fullcallendar] shortcode
-function fullcalendar_scan() { 
-  global $posts; 
-  if ( !is_array ( $posts ) ) 
-    return;
-  foreach ( $posts as $post ) { 
-   if ( false !== strpos ( $post->post_content, '[fullcalendar' ) ) {
-     if (fullcalendar_get_options('head') != ''){
-       add_action ('wp_head', 'fullcalendar_head');
-     }else{
-       add_action('wp_enqueue_scripts', 'fullcalendar_enqueue_scripts');
-     }
-     break; 
-   } 
-  } 
-} 
-add_action ( 'template_redirect' , 'fullcalendar_scan' );
+if (fullcalendar_get_options('head') != ''){
+  add_action('wp_head', 'fullcalendar_head');
+}else{
+  add_action('wp_enqueue_scripts', 'fullcalendar_enqueue_scripts');
+}
