@@ -121,11 +121,18 @@ add_shortcode('fullcalendar', 'fullcalendar_body');
 
 // Enqueue scripts and styles
 function fullcalendar_enqueue_scripts() {
-  wp_enqueue_script('moment', '//cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment-with-locales.min.js', array('jquery'));
-  wp_enqueue_script('fullcalendar', '//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js', array('jquery','moment'));
-  wp_enqueue_script('fullcalendar_gcal', '//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/gcal.js', array('fullcalendar'));
-  wp_enqueue_style('fullcalendar', '//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.css');
-  wp_enqueue_style('fullcalendar_print', '//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.print.min.css', array(), null, 'print');
+  // From CDN
+  //wp_enqueue_script('moment', '//cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment-with-locales.min.js', array('jquery'));
+  //wp_enqueue_script('fullcalendar', '//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js', array('jquery','moment'));
+  //wp_enqueue_script('fullcalendar_gcal', '//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/gcal.js', array('fullcalendar'));
+  //wp_enqueue_style('fullcalendar', '//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.css');
+  //wp_enqueue_style('fullcalendar_print', '//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.print.min.css', array(), null, 'print');
+  // From local
+  wp_enqueue_script('moment', $this->get_url() . 'lib/moment-with-locales.min.js', array('jquery'));
+  wp_enqueue_script('fullcalendar', $this->get_url() . 'lib/fullcalendar.min.js', array('jquery','moment'));
+  wp_enqueue_script('fullcalendar_gcal', $this->get_url() . 'lib/gcal.js', array('fullcalendar'));
+  wp_enqueue_style('fullcalendar', $this->get_url() . 'lib/fullcalendar.min.css');
+  wp_enqueue_style('fullcalendar_print', $this->get_url() . 'lib/fullcalendar.print.min.css', array(), null, 'print');
 }
 
 // Custom head template
