@@ -49,7 +49,7 @@ $fullcalendar_default_options = array(
 add_action('admin_menu', 'fullcalendar_menu');
 
 function fullcalendar_menu() {
-    add_options_page('FullCalendar', 'FullCalendar', 20, 'fullcalendar', 'fullcalendar_options');	 
+  add_options_page('FullCalendar', 'FullCalendar', 'activate_plugins', 'fullcalendar', 'fullcalendar_options');	 
 }
 
 function fullcalendar_get_options($field=null){
@@ -67,18 +67,22 @@ function fullcalendar_get_options($field=null){
 function fullcalendar_options() {
   global $fullcalendar_default_options;
   $options = fullcalendar_get_options();
+  if (!is_admin()){
+    ?><div class="error notice"><p><?=__('Sorry, only admin can edit fullcalendar options', 'fullcalendar_textdomain' )?></p></div><?php
+    return;
+  }
   if(isset($_POST['Submit']) && check_admin_referer('fullcalendar_options')){
     if ($_POST["Submit"] == __('Update', 'fullcalendar_textdomain' )){
       foreach($_POST as $key => $value){
         if (substr($key,0,13) == "fullcalendar_"){
-          $options[str_replace("fullcalendar_", "", sanitize_key($key))] = stripslashes($value); // value can't be sanitized as it's HTML code
+          $options[str_replace("fullcalendar_", "", sanitize_key($key))] = stripslashes($value); // value can be any HTML code
         }
       }
       update_option('fullcalendar_options', $options);
-      echo '<div class="updated"><p><strong>'.__('Options saved', 'fullcalendar_textdomain' ).'</strong></p></div>';
+      echo '<div class="updated notice"><p><strong>'.__('Options saved', 'fullcalendar_textdomain' ).'</strong></p></div>';
     }elseif ($_POST["Submit"] == __('Reset', 'fullcalendar_textdomain' )){
       update_option('fullcalendar_options', $fullcalendar_default_options);
-      echo '<div class="updated"><p><strong>'.__('Options resetted', 'fullcalendar_textdomain' ).'</strong></p></div>';
+      echo '<div class="updated notice"><p><strong>'.__('Options resetted', 'fullcalendar_textdomain' ).'</strong></p></div>';
     }
   }
   ?>
@@ -128,11 +132,11 @@ function fullcalendar_enqueue_scripts() {
   //wp_enqueue_style('fullcalendar', '//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.css');
   //wp_enqueue_style('fullcalendar_print', '//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.print.min.css', array(), null, 'print');
   // From local
-  wp_enqueue_script('moment', $this->get_url() . 'lib/moment-with-locales.min.js', array('jquery'));
-  wp_enqueue_script('fullcalendar', $this->get_url() . 'lib/fullcalendar.min.js', array('jquery','moment'));
-  wp_enqueue_script('fullcalendar_gcal', $this->get_url() . 'lib/gcal.js', array('fullcalendar'));
-  wp_enqueue_style('fullcalendar', $this->get_url() . 'lib/fullcalendar.min.css');
-  wp_enqueue_style('fullcalendar_print', $this->get_url() . 'lib/fullcalendar.print.min.css', array(), null, 'print');
+  wp_enqueue_script('moment', plugin_dir_url( __FILE__ ) . 'lib/moment-with-locales.min.js', array('jquery'));
+  wp_enqueue_script('fullcalendar', plugin_dir_url( __FILE__ ) . 'lib/fullcalendar.min.js', array('jquery','moment'));
+  wp_enqueue_script('fullcalendar_gcal', plugin_dir_url( __FILE__ ) . 'lib/gcal.js', array('fullcalendar'));
+  wp_enqueue_style('fullcalendar', plugin_dir_url( __FILE__ ) . 'lib/fullcalendar.min.css');
+  wp_enqueue_style('fullcalendar_print', plugin_dir_url( __FILE__ ) . 'lib/fullcalendar.print.min.css', array(), null, 'print');
 }
 
 // Custom head template
