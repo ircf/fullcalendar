@@ -27,8 +27,10 @@ This plugin provides the following features :
 
 == Screenshots ==
 
-1. You can setup the head and body templates in the admin option page.
-2. The calendar is displayed in your page when you insert the [fullcalendar] shortcode.
+1. You can setup the head and body templates in the admin option page. Keep the head template empty to load the fullcalendar local library
+2. Fill in the head template if you want to load fullcalendar from CDN, or another version or plugins.
+3. The calendar is displayed in your page when you insert the [fullcalendar] shortcode. Here is a sample with multiple calendars and a few CSS.
+4. Here is a sample with a single calendar and a custom CSS.
 
 == Changelog ==  
 
