@@ -1,9 +1,11 @@
 ﻿=== FullCalendar  ===
 Contributors: IRCF
-Tags: ircf, fullcalendar, google, calendar, jquery, agenda
+Donate link: https://ircf.fr
+Tags: fullcalendar, google, calendar, jquery, agenda, ircf
 Requires at least: 3.0.0
-Tested up to: 3.0
-Stable tag: 2.0
+Tested up to: 4.9.9
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Display and customize one or many Google calendars.
 A non-official WordPress plugin for the (https://fullcalendar.io/) Open Source project.
